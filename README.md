@@ -17,10 +17,12 @@ del x
 ```
 
 Dont confuse object deallocation and `__del__` dunder method. 
-`__del__` deletes reference to the object and even if last variable 
-that references it is deleted it does not guarantee that object will 
-actually be deallocated immediatelly after calling `del` as it may contain inner cycles and
-be deallocated later when garbage collector runs or not be deallocated at all if interpreter is shutting down and garbage collector did not run.
+`__del__` is a finalizer and is called right before object is about to be deallocated.
+This however, does not guarantee that object was deallocated. Idk patches python in runtime to be able to hook into actual deallocation 
+process and calls your callback right after deallocation routine of object is called. 
+Callback receives 1 parameter which is id of just deallocated object. Important to note that it is still possible to have object alive after its deallocation routine
+was called in some scenarios under certain circumstances.
+This package is meant for education/debugging purposes.
 
 ```python
 import idk
@@ -37,11 +39,6 @@ idk.watch(x, callback)
 del x
 print("this line is printed before object is deallocated")
 ```
-
-Idk patches python in runtime to be able to hook into actual deallocation 
-process and calls your callback right after object was deallocated. 
-Callback receives 1 parameter which is id of just deallocated object.
-This package is meant for education/debugging purposes.
 
 ### Important
 This is guaranteed to work only on linux/x86_64 and Python 3.9.0. Other configurations were not tested. Use it at your own risk.
